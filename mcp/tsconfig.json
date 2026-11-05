@@ -1,0 +1,19 @@
+{
+  // Type checking only (npm run typecheck). esbuild does the build.
+  "compilerOptions": {
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "target": "es2022",
+    "lib": ["es2022"],
+    "types": ["node"],
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}

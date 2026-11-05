@@ -1,0 +1,57 @@
+{
+  "name": "android-texter-mcp",
+  "version": "1.1.0",
+  "mcpName": "io.github.argosautomation/android-texter",
+  "description": "MCP server for Android Texter: let Claude, Cursor, and other AI clients send and read texts from your own Android phone and number.",
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "sms",
+    "mms",
+    "text-messaging",
+    "android",
+    "claude",
+    "cursor",
+    "android-texter"
+  ],
+  "homepage": "https://androidtexter.com/mcp",
+  "bugs": {
+    "url": "https://github.com/argosautomation/androidtexter-sdk/issues",
+    "email": "support@androidtexter.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/argosautomation/androidtexter-sdk.git",
+    "directory": "mcp"
+  },
+  "license": "MIT",
+  "author": "Android Texter (https://androidtexter.com)",
+  "type": "module",
+  "main": "build/index.js",
+  "bin": {
+    "android-texter-mcp": "build/index.js"
+  },
+  "files": [
+    "build/index.js",
+    "README.md",
+    "LICENSE",
+    "server.json"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node18 --format=esm --banner:js=\"#!/usr/bin/env node\" --outfile=build/index.js",
+    "build:download": "npm run build && cp build/index.js ../frontend/public/downloads/android-texter-mcp.js",
+    "typecheck": "tsc --noEmit",
+    "start": "node build/index.js",
+    "prepublishOnly": "npm run typecheck && npm run build"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@types/node": "^20.12.7",
+    "esbuild": "^0.20.2",
+    "typescript": "^5.4.5"
+  }
+}

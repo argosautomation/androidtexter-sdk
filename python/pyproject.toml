@@ -1,0 +1,62 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "androidtexter"
+dynamic = ["version"]
+description = "Official Python client for the Android Texter SMS API: send and receive texts through your own Android phone, with your own number."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.9"
+authors = [{ name = "Cloud Communication Platform LLC" }]
+dependencies = ["requests>=2.25"]
+keywords = [
+    "sms",
+    "sms-gateway",
+    "sms-api",
+    "android",
+    "text-message",
+    "mms",
+    "twilio-alternative",
+    "10dlc",
+    "androidtexter",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Communications :: Telephony",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://androidtexter.com"
+Documentation = "https://androidtexter.com/docs"
+Source = "https://github.com/argosautomation/androidtexter-sdk/tree/main/python"
+Issues = "https://github.com/argosautomation/androidtexter-sdk/issues"
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
+[tool.hatch.version]
+path = "src/androidtexter/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/androidtexter"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/androidtexter", "tests", "README.md", "LICENSE", "pyproject.toml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
