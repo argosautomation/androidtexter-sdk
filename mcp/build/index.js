@@ -20865,12 +20865,13 @@ var package_default = {
   ],
   homepage: "https://androidtexter.com/mcp",
   bugs: {
-    url: "https://github.com/argosautomation/android-texter-mcp/issues",
+    url: "https://github.com/argosautomation/androidtexter-sdk/issues",
     email: "support@androidtexter.com"
   },
   repository: {
     type: "git",
-    url: "git+https://github.com/argosautomation/android-texter-mcp.git"
+    url: "git+https://github.com/argosautomation/androidtexter-sdk.git",
+    directory: "mcp"
   },
   license: "MIT",
   author: "Android Texter (https://androidtexter.com)",
