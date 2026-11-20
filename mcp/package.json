@@ -1,6 +1,6 @@
 {
   "name": "android-texter-mcp",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "mcpName": "io.github.argosautomation/android-texter",
   "description": "MCP server for Android Texter: let Claude, Cursor, and other AI clients send and read texts from your own Android phone and number.",
   "keywords": [

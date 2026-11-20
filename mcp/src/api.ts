@@ -1,6 +1,8 @@
 // HTTP client for the Android Texter API, shared by the customer and admin
 // tool sets.
 
+import pkg from "../package.json" with { type: "json" };
+
 export const DEFAULT_API_BASE = "https://androidtexter.com/api";
 
 // ATX_API_BASE is the API root, ending in /api (the same variable and form
@@ -60,6 +62,23 @@ function detectClient(): string {
   return "Unknown Client";
 }
 
+/**
+ * The X-MCP-Client header, version-tagged.
+ *
+ * Until 1.2.0 this was detectClient() alone, so the backend saw literal
+ * strings like "Claude Code" and anything it did not recognise became
+ * "Unknown Client", which is also what a plain HTTP script's User-Agent
+ * falls back to. That is too weak to act on: counting the agent-shaped keys
+ * on 18 November 2026 meant reading 226 rows and guessing. The `mcp/<ver>`
+ * prefix is the part that matters, because it is the one thing a
+ * User-Agent can never look like, and it carries the bundle version into
+ * api_logs where a report can be read against the client that filed it.
+ */
+export function clientHeader(): string {
+  const name = process.env.ATX_CLIENT_NAME || detectClient();
+  return `mcp/${pkg.version} (${name})`;
+}
+
 export class ApiError extends Error {
   constructor(message: string, readonly status: number) {
     super(message);
@@ -85,7 +104,7 @@ export async function atx(path: string, method = "GET", body?: unknown): Promise
       "X-API-Key": apiKey,
       "Content-Type": "application/json",
       Accept: "application/json",
-      "X-MCP-Client": process.env.ATX_CLIENT_NAME || detectClient(),
+      "X-MCP-Client": clientHeader(),
     },
   };
   if (body !== undefined) init.body = JSON.stringify(body);

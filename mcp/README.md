@@ -136,8 +136,22 @@ The same server is available as a single file from the dashboard (**Settings > I
 | `list_contacts` | List or search contacts, or everyone with a tag. |
 | `list_contact_tags` | Every tag in use on your contacts. |
 | `save_contact` | Create a contact or update one by phone number. Fields you leave out are kept; tags are added. |
+| `known_issues` | Android Texter's own list of current limitations, plan limits and known bugs, with the workaround for each. |
+| `report_issue` | Tell Android Texter about something the assistant could not do: a missing capability, an unclear tool, a wrong result, a limit it hit. |
 
 Sending tools send real texts to real people from your number. Good clients ask before calling them; you can also set them to always ask in your client's tool settings.
+
+### Telling Android Texter what the assistant could not do
+
+The failures worth hearing about are the ones that never reach a server log: there was no tool for it, an argument was ambiguous, or the assistant had to tell you no. `report_issue` is how it says so, and `known_issues` is how it checks first instead of guessing at an explanation in front of you.
+
+You decide what that does, per account and per API key, under **Settings > API Keys**:
+
+- **Approve first** (the default, including for keys created before this existed): the report is saved as your own draft. Android Texter cannot see it until you open it and send it. Drafts you ignore expire.
+- **Send automatically**: it reaches Android Texter when the assistant files it.
+- **Off**: nothing is filed, and the assistant is told to tell you directly instead.
+
+Whichever it is, the reply says so and the assistant repeats it to you with a link, so a report never leaves your account without you knowing. Reports carry the problem, not your data: no message text, numbers, names or email addresses, and the server strips them if an assistant includes them anyway.
 
 ## Example prompts
 

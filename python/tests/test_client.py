@@ -86,7 +86,17 @@ def test_error_classes(client, session, status, cls):
 
 
 def test_rate_limit_upgrade_flag(client, session):
-    session.queue(429, {"error": "Daily message limit reached. Upgrade to Pro for unlimited.", "upgrade": True})
+    session.queue(429, {
+        "error": (
+            "Daily limit reached: the free plan includes 100 messages a day in total, "
+            "counting the dashboard, the API, broadcasts and auto-replies. "
+            "It resets at 00:00 on 18 Nov UTC. Pro is $10 a month per phone and has no daily limit."
+        ),
+        "upgrade": True,
+        "used": 100,
+        "limit": 100,
+        "remaining": 0,
+    })
     with pytest.raises(RateLimitError) as ei:
         client.send_message("+15551234567", "hi")
     assert ei.value.upgrade is True

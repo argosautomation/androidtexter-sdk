@@ -3,6 +3,7 @@
 // and only ever reads or writes the calling account's own data.
 
 import { atx, int, json, query, requireStr, str, text, type ToolDef } from "./api.js";
+import { feedbackTools } from "./feedback.js";
 
 const PHONE_HELP =
   "Use E.164 format (e.g. +15551234567). A number without a country code is read in the country of the phone's SIM.";
@@ -335,4 +336,9 @@ export const customerTools: ToolDef[] = [
       return json(await atx("/contacts", "POST", body));
     },
   },
+
+  // known_issues and report_issue. Last in the list on purpose: they are
+  // about the server rather than about texting, and a client that renders
+  // the tool list in order should show the messaging tools first.
+  ...feedbackTools,
 ];

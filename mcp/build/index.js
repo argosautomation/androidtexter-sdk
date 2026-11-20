@@ -20848,7 +20848,7 @@ var StdioServerTransport = class {
 // package.json
 var package_default = {
   name: "android-texter-mcp",
-  version: "1.1.0",
+  version: "1.2.0",
   mcpName: "io.github.argosautomation/android-texter",
   description: "MCP server for Android Texter: let Claude, Cursor, and other AI clients send and read texts from your own Android phone and number.",
   keywords: [
@@ -20931,6 +20931,10 @@ function detectClient() {
     return "Claude Desktop";
   return "Unknown Client";
 }
+function clientHeader() {
+  const name = process.env.ATX_CLIENT_NAME || detectClient();
+  return `mcp/${package_default.version} (${name})`;
+}
 var ApiError = class extends Error {
   constructor(message, status) {
     super(message);
@@ -20951,7 +20955,7 @@ async function atx(path, method = "GET", body) {
       "X-API-Key": apiKey,
       "Content-Type": "application/json",
       Accept: "application/json",
-      "X-MCP-Client": process.env.ATX_CLIENT_NAME || detectClient()
+      "X-MCP-Client": clientHeader()
     }
   };
   if (body !== void 0)
@@ -21021,7 +21025,7 @@ function startServer(tools, label = "") {
     { name: "android-texter-mcp", title: "Android Texter", version: package_default.version },
     {
       capabilities: { tools: {} },
-      instructions: "Android Texter sends real text messages from the user's own Android phone and number. Read tools (list_devices, list_conversations, get_conversation, search_messages, list_contacts) are safe to call freely. Before send_message or send_broadcast, confirm the recipients and the exact wording with the user."
+      instructions: "Android Texter sends real text messages from the user's own Android phone and number. Read tools (list_devices, list_conversations, get_conversation, search_messages, list_contacts) are safe to call freely. Before send_message or send_broadcast, confirm the recipients and the exact wording with the user. If something here looks broken, impossible or limited, call known_issues before saying so to the user: plan limits and missing delivery receipts have known explanations. If it is not on that list and you are stuck, report_issue tells Android Texter, which is the only way they hear about a request you decided not to make. Never put message text, phone numbers, names or email addresses in a report."
     }
   );
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
@@ -21063,6 +21067,131 @@ function startServer(tools, label = "") {
     process.exit(1);
   });
 }
+
+// src/feedback.ts
+var CATEGORIES = [
+  "missing_capability",
+  "unclear_tool",
+  "tool_error",
+  "wrong_result",
+  "permission_or_plan",
+  "docs",
+  "other"
+];
+var feedbackTools = [
+  {
+    name: "known_issues",
+    title: "Check what Android Texter already knows about",
+    description: "Read Android Texter's own list of current limitations, plan limits and known bugs, with the workaround for each. Call this BEFORE telling the user that something is broken, impossible, or a bug, and before using report_issue: a 429 on a send, a status that never reaches 'delivered', and a broadcast that cannot be scheduled all have known explanations, and guessing at them in front of the user gets it wrong. Reads nothing about the account and sends nothing anywhere.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        tool: {
+          type: "string",
+          description: "Optional. Only issues affecting this tool (e.g. send_broadcast), plus the ones that affect everything."
+        }
+      }
+    },
+    annotations: { readOnlyHint: true, openWorldHint: false },
+    async run(args) {
+      const data = await atx(`/agent/known-issues${query({ tool: str(args, "tool") })}`);
+      const issues = data.issues ?? [];
+      if (issues.length === 0) {
+        return text(
+          "Android Texter has no known issues published for that. If something is not working, report_issue is how to tell them."
+        );
+      }
+      return json2(issues);
+    }
+  },
+  {
+    name: "report_issue",
+    title: "Report a problem or limitation to Android Texter",
+    description: "Tell Android Texter about something you could not do with these tools: a capability that is missing, a tool whose arguments or behaviour were unclear, a result that looked wrong, or a limit you hit on the user's behalf. Android Texter cannot see this from their logs, because the thing worth reporting is usually the request you decided not to make. Call known_issues first, so you do not report something already known. Use it when you have actually hit the wall, not speculatively, and once per problem: filing the same thing twice adds nothing. PRIVACY, and this is not optional: describe the PROBLEM, never the user's data. No message text, no phone numbers, no names, no email addresses, no contact details, not even as an example. The server strips them out and the report is worse for having had them. WHAT HAPPENS NEXT depends on a setting the account owner controls, and the reply tells you which: either it is saved as the owner's own draft and Android Texter cannot see it until the owner approves it, or it goes straight to Android Texter, or reports are turned off for this account. Read the reply's message back to the user in your own words, including the link, whichever it says. That reply is how the owner finds out this exists.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        category: {
+          type: "string",
+          enum: [...CATEGORIES],
+          description: "missing_capability: there is no tool for what was needed. unclear_tool: the tool exists but its arguments or behaviour were ambiguous. tool_error: it returned an error you could not act on. wrong_result: it succeeded but the result was not right. permission_or_plan: blocked by a limit or permission. docs: the description or documentation is wrong or missing. other: none of these."
+        },
+        tool: {
+          type: "string",
+          description: "Optional. The tool this is about, e.g. send_broadcast. Leave out if it is about the API as a whole."
+        },
+        goal: {
+          type: "string",
+          description: 'One sentence on what you were trying to achieve, in terms of the task, not the data. Good: "schedule one broadcast to a tagged list for tomorrow morning". Bad: anything quoting a message, a number or a name.'
+        },
+        expected: {
+          type: "string",
+          description: "Optional. One sentence on what you expected to be able to do, or what you expected to happen."
+        },
+        suggestion: {
+          type: "string",
+          description: "Optional. One sentence on what would have solved it, if you can name it (a tool, an argument, a clearer description)."
+        },
+        blocked: {
+          type: "boolean",
+          description: "True if you could not complete the user's request at all. False if you got there another way but it was awkward. This is the field that sorts the queue, so be honest about it."
+        }
+      },
+      required: ["category", "goal"]
+    },
+    // Not read-only, but it writes nothing of the user's and sends no
+    // message to anybody: openWorldHint stays false so a client does not
+    // treat it like a send.
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    async run(args) {
+      const category = requireStr(args, "category");
+      if (!CATEGORIES.includes(category)) {
+        throw new Error(`category must be one of: ${CATEGORIES.join(", ")}`);
+      }
+      const body = {
+        category,
+        goal: requireStr(args, "goal"),
+        server_version: package_default.version
+      };
+      for (const k of ["tool", "expected", "suggestion"]) {
+        const v = str(args, k);
+        if (v !== void 0)
+          body[k] = v;
+      }
+      if (typeof args.blocked === "boolean")
+        body.blocked = args.blocked;
+      let data;
+      try {
+        data = await atx("/agent/reports", "POST", body);
+      } catch (e) {
+        if (e instanceof ApiError && e.status === 404) {
+          return text(
+            "This Android Texter account is on an API version that does not take issue reports yet, so nothing was filed. Tell the user what you ran into directly; there is nothing to retry."
+          );
+        }
+        throw e;
+      }
+      const lines = [String(data.message ?? "")];
+      if (data.redaction_note)
+        lines.push("", String(data.redaction_note));
+      lines.push(
+        "",
+        JSON.stringify(
+          {
+            accepted: data.accepted ?? false,
+            status: data.status,
+            report_id: data.report_id,
+            duplicate: data.duplicate ?? false,
+            mode: data.mode
+          },
+          null,
+          2
+        )
+      );
+      return text(lines.join("\n"));
+    }
+  }
+];
 
 // src/customer.ts
 var PHONE_HELP = "Use E.164 format (e.g. +15551234567). A number without a country code is read in the country of the phone's SIM.";
@@ -21371,7 +21500,11 @@ var customerTools = [
       }
       return json2(await atx("/contacts", "POST", body));
     }
-  }
+  },
+  // known_issues and report_issue. Last in the list on purpose: they are
+  // about the server rather than about texting, and a client that renders
+  // the tool list in order should show the messaging tools first.
+  ...feedbackTools
 ];
 
 // src/index.ts
