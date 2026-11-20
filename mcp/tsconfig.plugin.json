@@ -1,0 +1,21 @@
+{
+  // Emits the Claude plugin bundle's server: plain readable JavaScript, no
+  // SDK, no node_modules. Entry point src/plugin.ts, so tsc follows only
+  // stdio.ts, customer.ts, feedback.ts, api.ts, instructions.ts and
+  // version.ts, and never index.ts or server.ts (which import the MCP SDK).
+  //
+  // Driven by scripts/build-claude-plugin.sh, which also sets --outDir.
+  // Do not run it by hand; the script proves the output against the SDK
+  // server before it lets you commit it.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "rootDir": "src",
+    "outDir": "../claude-plugin/mcp/src",
+    "declaration": false,
+    "sourceMap": false,
+    "removeComments": false
+  },
+  "files": ["src/plugin.ts"],
+  "include": []
+}

@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "android-texter": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/src/plugin.js"],
+      "env": {
+        "ATX_API_KEY": "${user_config.api_key}",
+        "ATX_CLIENT_NAME": "claude-plugin"
+      }
+    }
+  }
+}

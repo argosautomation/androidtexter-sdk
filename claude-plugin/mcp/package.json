@@ -1,0 +1,9 @@
+{
+  "name": "android-texter-plugin-server",
+  "version": "1.2.0",
+  "private": true,
+  "type": "module",
+  "description": "The Android Texter MCP server as the Claude plugin runs it: ES modules, no dependencies, nothing to install. Generated from mcp-server/src by scripts/build-claude-plugin.sh; edit the TypeScript, not these files.",
+  "license": "MIT",
+  "engines": { "node": ">=18" }
+}

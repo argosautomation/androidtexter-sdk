@@ -1,7 +1,7 @@
 // HTTP client for the Android Texter API, shared by the customer and admin
 // tool sets.
 
-import pkg from "../package.json" with { type: "json" };
+import { VERSION } from "./version.js";
 
 export const DEFAULT_API_BASE = "https://androidtexter.com/api";
 
@@ -76,7 +76,7 @@ function detectClient(): string {
  */
 export function clientHeader(): string {
   const name = process.env.ATX_CLIENT_NAME || detectClient();
-  return `mcp/${pkg.version} (${name})`;
+  return `mcp/${VERSION} (${name})`;
 }
 
 export class ApiError extends Error {

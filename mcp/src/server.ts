@@ -12,7 +12,8 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
-import pkg from "../package.json" with { type: "json" };
+import { VERSION } from "./version.js";
+import { INSTRUCTIONS } from "./instructions.js";
 import { apiRoot, type ToolDef } from "./api.js";
 
 /** Starts the stdio server with the given tools. `label` goes in the startup log. */
@@ -20,11 +21,10 @@ export function startServer(tools: ToolDef[], label = "") {
   const byName = new Map(tools.map((t) => [t.name, t]));
 
   const server = new Server(
-    { name: "android-texter-mcp", title: "Android Texter", version: pkg.version },
+    { name: "android-texter-mcp", title: "Android Texter", version: VERSION },
     {
       capabilities: { tools: {} },
-      instructions:
-        "Android Texter sends real text messages from the user's own Android phone and number. Read tools (list_devices, list_conversations, get_conversation, search_messages, list_contacts) are safe to call freely. Before send_message or send_broadcast, confirm the recipients and the exact wording with the user. If something here looks broken, impossible or limited, call known_issues before saying so to the user: plan limits and missing delivery receipts have known explanations. If it is not on that list and you are stuck, report_issue tells Android Texter, which is the only way they hear about a request you decided not to make. Never put message text, phone numbers, names or email addresses in a report.",
+      instructions: INSTRUCTIONS,
     },
   );
 
@@ -52,7 +52,7 @@ export function startServer(tools: ToolDef[], label = "") {
 
   async function run() {
     if (process.argv.includes("--version") || process.argv.includes("-v")) {
-      console.log(pkg.version);
+      console.log(VERSION);
       return;
     }
     // No key is not fatal: the client can still list the tools (directories
@@ -63,7 +63,7 @@ export function startServer(tools: ToolDef[], label = "") {
     const transport = new StdioServerTransport();
     await server.connect(transport);
     console.error(
-      `Android Texter MCP server ${pkg.version} on stdio, API ${apiRoot()}, ${tools.length} tools${label}`,
+      `Android Texter MCP server ${VERSION} on stdio, API ${apiRoot()}, ${tools.length} tools${label}`,
     );
   }
 

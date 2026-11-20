@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin.json",
+  "name": "android-texter",
+  "displayName": "Android Texter",
+  "description": "Send and read SMS and MMS from your own Android phone and number. Texts go out over your phone's carrier plan, and replies come back into your Android Texter account.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Android Texter",
+    "email": "support@androidtexter.com",
+    "url": "https://androidtexter.com"
+  },
+  "homepage": "https://androidtexter.com/mcp",
+  "repository": "https://github.com/argosautomation/androidtexter-sdk",
+  "license": "MIT",
+  "keywords": ["sms", "mms", "text-messaging", "android", "phone", "messaging"],
+  "icon": "./logo.png",
+  "documentationUrl": "https://androidtexter.com/docs",
+  "privacyPolicyUrl": "https://androidtexter.com/privacy",
+  "termsOfServiceUrl": "https://androidtexter.com/terms",
+  "engines": {
+    "claude-code": ">=2.1.0"
+  },
+  "network": {
+    "hosts": ["androidtexter.com"]
+  },
+  "userConfig": {
+    "api_key": {
+      "type": "string",
+      "title": "Android Texter API key",
+      "description": "Create one in the dashboard under Settings > API Keys (https://androidtexter.com/dashboard/settings/api-keys). Keys start with atx_.",
+      "required": true,
+      "sensitive": true
+    }
+  }
+}

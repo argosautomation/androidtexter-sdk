@@ -30,7 +30,7 @@
 //    body. Do not "improve" this by throwing on accepted: false.
 
 import { atx, ApiError, json, query, requireStr, str, text, type ToolDef } from "./api.js";
-import pkg from "../package.json" with { type: "json" };
+import { VERSION } from "./version.js";
 
 const CATEGORIES = [
   "missing_capability",
@@ -125,7 +125,7 @@ export const feedbackTools: ToolDef[] = [
       const body: Record<string, unknown> = {
         category,
         goal: requireStr(args, "goal"),
-        server_version: pkg.version,
+        server_version: VERSION,
       };
       for (const k of ["tool", "expected", "suggestion"]) {
         const v = str(args, k);

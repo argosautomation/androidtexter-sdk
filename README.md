@@ -7,6 +7,7 @@ Official client libraries for [Android Texter](https://androidtexter.com), the S
 | Python | `pip install androidtexter` | [`python/`](python) |
 | Node.js / TypeScript | `npm install androidtexter` | [`node/`](node) |
 | MCP server for Claude, Cursor and other AI clients | `npx -y android-texter-mcp` | [`mcp/`](mcp) |
+| Claude Code plugin (the same MCP server plus skills) | install from Claude's plugin directory | [`claude-plugin/`](claude-plugin) |
 
 ## Send your first text
 
