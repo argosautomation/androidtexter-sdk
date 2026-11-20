@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-marketplace.json",
+  "name": "androidtexter",
+  "owner": {
+    "name": "Android Texter",
+    "email": "support@androidtexter.com",
+    "url": "https://androidtexter.com"
+  },
+  "metadata": {
+    "description": "Android Texter's own plugins for Claude Code.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "android-texter",
+      "source": "./claude-plugin",
+      "description": "Send and read SMS and MMS from your own Android phone and number, with skills for confirming a recipient, building a broadcast list, and answering questions about a conversation.",
+      "category": "communication",
+      "keywords": ["sms", "mms", "text-messaging", "android", "messaging"],
+      "homepage": "https://androidtexter.com/mcp",
+      "license": "MIT"
+    }
+  ]
+}

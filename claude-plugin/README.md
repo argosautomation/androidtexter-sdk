@@ -35,6 +35,13 @@ else's phone, and the pairing step requires physical possession of the handset.
    start with `atx_`.
 3. Node.js 18 or newer (`node --version`).
 
+In Claude Code, until the directory listing is live:
+
+```
+/plugin marketplace add argosautomation/androidtexter-sdk
+/plugin install android-texter@androidtexter
+```
+
 Install the plugin, and Claude Code asks for the key. It is stored in your
 operating system's credential store, not in a settings file, and it is passed
 to the MCP server as the `ATX_API_KEY` environment variable. That is the only
